@@ -195,3 +195,7 @@ class ILI9341:
             return self._scroll
         self._scroll = (self._scroll + dy) % self.height
         self._write(_LINE_SET, ustruct.pack('>H', self._scroll))
+
+    def print(self, text):
+        self.scroll(8)
+        self.text(text, 0, (232 + self.scroll()) % 240, clear_eol=True)
