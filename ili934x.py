@@ -55,28 +55,28 @@ class ILI9341:
 
     def init(self):
         for command, data in (
-            (0xef, b'\x03\x80\x02'),
-            (0xcf, b'\x00\xc1\x30'),
-            (0xed, b'\x64\x03\x12\x81'),
-            (0xe8, b'\x85\x00\x78'),
-            (0xcb, b'\x39\x2c\x00\x34\x02'),
-            (0xf7, b'\x20'),
-            (0xea, b'\x00\x00'),
-            (0xc0, b'\x23'),  # Power Control 1, VRH[5:0]
-            (0xc1, b'\x10'),  # Power Control 2, SAP[2:0], BT[3:0]
-            (0xc5, b'\x3e\x28'),  # VCM Control 1
-            (0xc7, b'\x86'),  # VCM Control 2
-            #(0x36, b'\x48'),  # Memory Access Control
-            (0x36, b'\x08'),  # Memory Access Control
-            (0x3a, b'\x55'),  # Pixel Format
-            (0xb1, b'\x00\x18'),  # FRMCTR1
-            (0xb6, b'\x08\x82\x27'),  # Display Function Control
-            (0xf2, b'\x00'),  # 3Gamma Function Disable
-            (0x26, b'\x01'),  # Gamma Curve Selected
+            (0xef, b"\x03\x80\x02"),
+            (0xcf, b"\x00\xc1\x30"),
+            (0xed, b"\x64\x03\x12\x81"),
+            (0xe8, b"\x85\x00\x78"),
+            (0xcb, b"\x39\x2c\x00\x34\x02"),
+            (0xf7, b"\x20"),
+            (0xea, b"\x00\x00"),
+            (0xc0, b"\x23"),  # Power Control 1, VRH[5:0]
+            (0xc1, b"\x10"),  # Power Control 2, SAP[2:0], BT[3:0]
+            (0xc5, b"\x3e\x28"),  # VCM Control 1
+            (0xc7, b"\x86"),  # VCM Control 2
+            #(0x36, b"\x48"),  # Memory Access Control
+            (0x36, b"\x08"),  # Memory Access Control
+            (0x3a, b"\x55"),  # Pixel Format
+            (0xb1, b"\x00\x18"),  # FRMCTR1
+            (0xb6, b"\x08\x82\x27"),  # Display Function Control
+            (0xf2, b"\x00"),  # 3Gamma Function Disable
+            (0x26, b"\x01"),  # Gamma Curve Selected
             (0xe0,  # Set Gamma
-             b'\x0f\x31\x2b\x0c\x0e\x08\x4e\xf1\x37\x07\x10\x03\x0e\x09\x00'),
+             b"\x0f\x31\x2b\x0c\x0e\x08\x4e\xf1\x37\x07\x10\x03\x0e\x09\x00"),
             (0xe1,  # Set Gamma
-             b'\x00\x0e\x14\x03\x11\x07\x31\xc1\x48\x08\x0f\x0c\x31\x36\x0f'),
+             b"\x00\x0e\x14\x03\x11\x07\x31\xc1\x48\x08\x0f\x0c\x31\x36\x0f"),
         ):
             self._write(command, data)
         self._write(_WAKE)
@@ -131,7 +131,7 @@ class ILI9341:
         y = min(self.height - 1, max(0, y))
         w = min(self.width - x, max(1, w))
         h = min(self.height - y, max(1, h))
-        self._block(x, y, x + w - 1, y + h - 1, b'')
+        self._block(x, y, x + w - 1, y + h - 1, b"")
         chunks, rest = divmod(w * h, 512)
         if chunks:
             data = ustruct.pack(">H", color) * 512
@@ -178,7 +178,7 @@ class ILI9341:
                 ty = y
 
         for char in text:
-            if char == '\n':
+            if char == "\n":
                 if clear_eol and tx < wrap:
                     self.fill_rectangle(tx, ty, wrap - tx + 7, 8, background)
                 new_line()
@@ -194,7 +194,7 @@ class ILI9341:
         if dy is None:
             return self._scroll
         self._scroll = (self._scroll + dy) % self.height
-        self._write(_LINE_SET, ustruct.pack('>H', self._scroll))
+        self._write(_LINE_SET, ustruct.pack(">H", self._scroll))
 
     def print(self, text):
         self.scroll(8)
