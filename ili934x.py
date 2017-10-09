@@ -84,24 +84,24 @@ class ILI9341:
         self._write(_DISPLAY_ON)
 
     def reset(self):
-        self.rst.low()
+        self.rst(0)
         time.sleep_ms(50)
-        self.rst.high()
+        self.rst(1)
         time.sleep_ms(50)
 
     def _write(self, command, data=None):
-        self.dc.low()
-        self.cs.low()
+        self.dc(0)
+        self.cs(0)
         self.spi.write(bytearray([command]))
-        self.cs.high()
+        self.cs(1)
         if data is not None:
             self._data(data)
 
     def _data(self, data):
-        self.dc.high()
-        self.cs.low()
+        self.dc(1)
+        self.cs(0)
         self.spi.write(data)
-        self.cs.high()
+        self.cs(1)
 
     def _block(self, x0, y0, x1, y1, data=None):
         self._write(_COLUMN_SET, ustruct.pack(">HH", x0, x1))
@@ -111,11 +111,11 @@ class ILI9341:
         self._write(_RAM_WRITE, data)
 
     def _read(self, command, count):
-        self.dc.low()
-        self.cs.low()
+        self.dc(0)
+        self.cs(0)
         self.spi.write(bytearray([command]))
         data = self.spi.read(count)
-        self.cs.high()
+        self.cs(1)
         return data
 
     def pixel(self, x, y, color=None):
