@@ -38,8 +38,8 @@ class ILI9341:
     >>> display.pixel(120, 160, 0)
     """
 
-    width = 240
-    height = 320
+    width = 320
+    height = 240
 
     def __init__(self, spi, cs, dc, rst):
         self.spi = spi
@@ -66,7 +66,8 @@ class ILI9341:
             (0xc1, b'\x10'),  # Power Control 2, SAP[2:0], BT[3:0]
             (0xc5, b'\x3e\x28'),  # VCM Control 1
             (0xc7, b'\x86'),  # VCM Control 2
-            (0x36, b'\x48'),  # Memory Access Control
+            #(0x36, b'\x48'),  # Memory Access Control
+            (0x36, b'\x08'),  # Memory Access Control
             (0x3a, b'\x55'),  # Pixel Format
             (0xb1, b'\x00\x18'),  # FRMCTR1
             (0xb6, b'\x08\x82\x27'),  # Display Function Control
