@@ -1,3 +1,13 @@
+
+# This file is part of MicroPython ILI934X driver
+# Copyright (c) 2016 - 2017 Radomir Dopieralski, Mika Tuupola
+#
+# Licensed under the MIT license:
+#   http://www.opensource.org/licenses/mit-license.php
+#
+# Project home:
+#   https://github.com/tuupola/micropython-ili934x
+
 import time
 import ustruct
 import framebuf
