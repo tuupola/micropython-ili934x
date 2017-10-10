@@ -12,18 +12,65 @@ import time
 import ustruct
 import framebuf
 
-_COLUMN_SET = const(0x2a)
-_PAGE_SET = const(0x2b)
-_RAM_WRITE = const(0x2c)
-_RAM_READ = const(0x2e)
-_DISPLAY_ON = const(0x29)
-_WAKE = const(0x11)
-_LINE_SET = const(0x37)
-
+_NOP = const(0x00)
+_SWRESET = const(0x01)
+_RDDIDIF = const(0x04)
+_RDDST = const(0x09)
+_RDDPM = const(0x0a)
+_RDDMADCTL = const(0x0b)
+_RDDCOLMOD = const(0x0c)
+_RDDIM = const(0x0d)
+_RDDSM = const(0x0e)
+_RDDSDR = const(0x0f) # Read Display Self-Diagnostic Result
+_SLPIN = const(0x10)
+_SLPOUT = const(0x11) # Sleep Out
+_PTLON = const(0x12)
+_NORON = const(0x13)
+_DINVOFF = const(0x20)
+_DINVON = const(0x21)
+_GAMSET = const(0x26) # Gamma Set
+_DISPOFF = const(0x28) # Display Off
+_DISPON = const(0x29) # Display On
+_CASET = const(0x2a) # Column Address Set
+_PASET = const(0x2b) # Page Address Set
+_RAMWR = const(0x2c) # Memory Write
+_RAMRD = const(0x2e) # Memory Read
+_PLTAR = const(0x30)
+_VSCRDEF = const(0x33)
+_TEOFF = const(0x34)
+_TEON = const(0x35)
+_MADCTL = const(0x36) # Memory Access Control
+_VSCRSADD = const(0x37) # Vertical Scrolling Start Address
+_IDMOFF = const(0x38)
+_IDMON = const(0x39)
+_PIXSET = const(0x3a) # Pixel Format Set
+_WRMEMC = const(0x3c)
+_RDMEMC = const(0x3e)
+_STS = const(0x44)
+_GTS = const(0x45)
+_WRDISBV = const(0x51)
+_RDDISBV = const(0x52)
+_WRCTRLD = const(0x53)
+_RDCTRLD = const(0x54)
+_WRCABC = const(0x55)
+_PWCTRLA = const(0xcb) # Power Control A
+_PWCRTLB = const(0xcf) # Power Control B
+_DTCTRLA = const(0xe8) # Driver Timing Control A
+_DTCTRLB = const(0xea) # Driver Timing Control B
+_PWRONCTRL = const(0xed) # Power on Sequence Control
+_PRCTRL = const(0xf7) # Pump Ratio Control
+_PWCTRL1 = const(0xc0) # Power Control 1
+_PWCTRL2 = const(0xc1) # Power Control 2
+_VMCTRL1 = const(0xc5) # VCOM Control 1
+_VMCTRL2 = const(0xc7) # VCOM Control 2
+_FRMCTR1 = const(0xb1) # Frame Rate Control 1
+_DISCTRL = const(0xb6) # Display Function Control
+_ENA3G = const(0xf2) # Enable 3G
+_PGAMCTRL = const(0xe0) # Positive Gamma Control
+_NGAMCTRL = const(0xe1) # Negative Gamma Control
 
 def color565(r, g, b):
     return (r & 0xf8) << 8 | (g & 0xfc) << 3 | b >> 3
-
 
 class ILI9341:
     """
@@ -55,33 +102,31 @@ class ILI9341:
 
     def init(self):
         for command, data in (
-            (0xef, b"\x03\x80\x02"),
-            (0xcf, b"\x00\xc1\x30"),
-            (0xed, b"\x64\x03\x12\x81"),
-            (0xe8, b"\x85\x00\x78"),
-            (0xcb, b"\x39\x2c\x00\x34\x02"),
-            (0xf7, b"\x20"),
-            (0xea, b"\x00\x00"),
-            (0xc0, b"\x23"),  # Power Control 1, VRH[5:0]
-            (0xc1, b"\x10"),  # Power Control 2, SAP[2:0], BT[3:0]
-            (0xc5, b"\x3e\x28"),  # VCM Control 1
-            (0xc7, b"\x86"),  # VCM Control 2
-            #(0x36, b"\x48"),  # Memory Access Control
-            (0x36, b"\x08"),  # Memory Access Control
-            (0x3a, b"\x55"),  # Pixel Format
-            (0xb1, b"\x00\x18"),  # FRMCTR1
-            (0xb6, b"\x08\x82\x27"),  # Display Function Control
-            (0xf2, b"\x00"),  # 3Gamma Function Disable
-            (0x26, b"\x01"),  # Gamma Curve Selected
-            (0xe0,  # Set Gamma
-             b"\x0f\x31\x2b\x0c\x0e\x08\x4e\xf1\x37\x07\x10\x03\x0e\x09\x00"),
-            (0xe1,  # Set Gamma
-             b"\x00\x0e\x14\x03\x11\x07\x31\xc1\x48\x08\x0f\x0c\x31\x36\x0f"),
-        ):
+                (_RDDSDR b"\x03\x80\x02"),
+                (_PWCRTLB, b"\x00\xc1\x30"),
+                (_PWRONCTRL, b"\x64\x03\x12\x81"),
+                (_DTCTRLA, b"\x85\x00\x78"),
+                (_PWCTRLCA, b"\x39\x2c\x00\x34\x02"),
+                (_PRCTRL, b"\x20"),
+                (_DTCTRLB, b"\x00\x00"),
+                (_PWCTRL1, b"\x23"),
+                (_PWCTRL2, b"\x10"),
+                (_VMCTRL1, b"\x3e\x28"),
+                (_VMCTRL2, b"\x86"),
+                #(_MADCTL, b"\x48"),
+                (_MADCTL, b"\x08"),
+                (_PIXSET, b"\x55"),
+                (_FRMCTR1, b"\x00\x18"),
+                (_DISCTRL, b"\x08\x82\x27"),
+                (_ENA3G, b"\x00"),
+                (_GAMSET, b"\x01"),
+                (_PGAMCTRL, b"\x0f\x31\x2b\x0c\x0e\x08\x4e\xf1\x37\x07\x10\x03\x0e\x09\x00"),
+                (_NGAMCTRL, b"\x00\x0e\x14\x03\x11\x07\x31\xc1\x48\x08\x0f\x0c\x31\x36\x0f"),
+            ):
             self._write(command, data)
-        self._write(_WAKE)
+        self._write(_SLPOUT)
         time.sleep_ms(120)
-        self._write(_DISPLAY_ON)
+        self._write(_DISPON)
 
     def reset(self):
         self.rst(0)
@@ -104,11 +149,11 @@ class ILI9341:
         self.cs(1)
 
     def _block(self, x0, y0, x1, y1, data=None):
-        self._write(_COLUMN_SET, ustruct.pack(">HH", x0, x1))
-        self._write(_PAGE_SET, ustruct.pack(">HH", y0, y1))
+        self._write(_CASET, ustruct.pack(">HH", x0, x1))
+        self._write(_PASET, ustruct.pack(">HH", y0, y1))
         if data is None:
-            return self._read(_RAM_READ, (x1 - x0 + 1) * (y1 - y0 + 1) * 3)
-        self._write(_RAM_WRITE, data)
+            return self._read(_RAMRD, (x1 - x0 + 1) * (y1 - y0 + 1) * 3)
+        self._write(_RAMWR, data)
 
     def _read(self, command, count):
         self.dc(0)
@@ -194,7 +239,7 @@ class ILI9341:
         if dy is None:
             return self._scroll
         self._scroll = (self._scroll + dy) % self.height
-        self._write(_LINE_SET, ustruct.pack(">H", self._scroll))
+        self._write(_VSCRSADD, ustruct.pack(">H", self._scroll))
 
     def print(self, text):
         self.scroll(8)
