@@ -11,23 +11,24 @@
 import time
 import ustruct
 import framebuf
+from micropython import const
 
-_NOP = const(0x00)
-_SWRESET = const(0x01)
-_RDDIDIF = const(0x04)
-_RDDST = const(0x09)
-_RDDPM = const(0x0a)
-_RDDMADCTL = const(0x0b)
-_RDDCOLMOD = const(0x0c)
-_RDDIM = const(0x0d)
-_RDDSM = const(0x0e)
+#_NOP = const(0x00)
+#_SWRESET = const(0x01)
+#_RDDIDIF = const(0x04)
+#_RDDST = const(0x09)
+#_RDDPM = const(0x0a)
+#_RDDMADCTL = const(0x0b)
+#_RDDCOLMOD = const(0x0c)
+#_RDDIM = const(0x0d)
+#_RDDSM = const(0x0e)
 _RDDSDR = const(0x0f) # Read Display Self-Diagnostic Result
-_SLPIN = const(0x10)
+#_SLPIN = const(0x10)
 _SLPOUT = const(0x11) # Sleep Out
-_PTLON = const(0x12)
-_NORON = const(0x13)
-_DINVOFF = const(0x20)
-_DINVON = const(0x21)
+#_PTLON = const(0x12)
+#_NORON = const(0x13)
+#_DINVOFF = const(0x20)
+#_DINVON = const(0x21)
 _GAMSET = const(0x26) # Gamma Set
 _DISPOFF = const(0x28) # Display Off
 _DISPON = const(0x29) # Display On
@@ -35,24 +36,24 @@ _CASET = const(0x2a) # Column Address Set
 _PASET = const(0x2b) # Page Address Set
 _RAMWR = const(0x2c) # Memory Write
 _RAMRD = const(0x2e) # Memory Read
-_PLTAR = const(0x30)
-_VSCRDEF = const(0x33)
-_TEOFF = const(0x34)
-_TEON = const(0x35)
+#_PLTAR = const(0x30)
+#_VSCRDEF = const(0x33)
+#_TEOFF = const(0x34)
+#_TEON = const(0x35)
 _MADCTL = const(0x36) # Memory Access Control
 _VSCRSADD = const(0x37) # Vertical Scrolling Start Address
-_IDMOFF = const(0x38)
-_IDMON = const(0x39)
+#_IDMOFF = const(0x38)
+#_IDMON = const(0x39)
 _PIXSET = const(0x3a) # Pixel Format Set
-_WRMEMC = const(0x3c)
-_RDMEMC = const(0x3e)
-_STS = const(0x44)
-_GTS = const(0x45)
-_WRDISBV = const(0x51)
-_RDDISBV = const(0x52)
-_WRCTRLD = const(0x53)
-_RDCTRLD = const(0x54)
-_WRCABC = const(0x55)
+#_WRMEMC = const(0x3c)
+#_RDMEMC = const(0x3e)
+#_STS = const(0x44)
+#_GTS = const(0x45)
+#_WRDISBV = const(0x51)
+#_RDDISBV = const(0x52)
+#_WRCTRLD = const(0x53)
+#_RDCTRLD = const(0x54)
+#_WRCABC = const(0x55)
 _PWCTRLA = const(0xcb) # Power Control A
 _PWCRTLB = const(0xcf) # Power Control B
 _DTCTRLA = const(0xe8) # Driver Timing Control A
@@ -102,27 +103,26 @@ class ILI9341:
 
     def init(self):
         for command, data in (
-                (_RDDSDR b"\x03\x80\x02"),
-                (_PWCRTLB, b"\x00\xc1\x30"),
-                (_PWRONCTRL, b"\x64\x03\x12\x81"),
-                (_DTCTRLA, b"\x85\x00\x78"),
-                (_PWCTRLCA, b"\x39\x2c\x00\x34\x02"),
-                (_PRCTRL, b"\x20"),
-                (_DTCTRLB, b"\x00\x00"),
-                (_PWCTRL1, b"\x23"),
-                (_PWCTRL2, b"\x10"),
-                (_VMCTRL1, b"\x3e\x28"),
-                (_VMCTRL2, b"\x86"),
-                #(_MADCTL, b"\x48"),
-                (_MADCTL, b"\x08"),
-                (_PIXSET, b"\x55"),
-                (_FRMCTR1, b"\x00\x18"),
-                (_DISCTRL, b"\x08\x82\x27"),
-                (_ENA3G, b"\x00"),
-                (_GAMSET, b"\x01"),
-                (_PGAMCTRL, b"\x0f\x31\x2b\x0c\x0e\x08\x4e\xf1\x37\x07\x10\x03\x0e\x09\x00"),
-                (_NGAMCTRL, b"\x00\x0e\x14\x03\x11\x07\x31\xc1\x48\x08\x0f\x0c\x31\x36\x0f"),
-            ):
+            (_RDDSDR, b"\x03\x80\x02"),
+            (_PWCRTLB, b"\x00\xc1\x30"),
+            (_PWRONCTRL, b"\x64\x03\x12\x81"),
+            (_DTCTRLA, b"\x85\x00\x78"),
+            (_PWCTRLA, b"\x39\x2c\x00\x34\x02"),
+            (_PRCTRL, b"\x20"),
+            (_DTCTRLB, b"\x00\x00"),
+            (_PWCTRL1, b"\x23"),
+            (_PWCTRL2, b"\x10"),
+            (_VMCTRL1, b"\x3e\x28"),
+            (_VMCTRL2, b"\x86"),
+            #(_MADCTL, b"\x48"),
+            (_MADCTL, b"\x08"),
+            (_PIXSET, b"\x55"),
+            (_FRMCTR1, b"\x00\x18"),
+            (_DISCTRL, b"\x08\x82\x27"),
+            (_ENA3G, b"\x00"),
+            (_GAMSET, b"\x01"),
+            (_PGAMCTRL, b"\x0f\x31\x2b\x0c\x0e\x08\x4e\xf1\x37\x07\x10\x03\x0e\x09\x00"),
+            (_NGAMCTRL, b"\x00\x0e\x14\x03\x11\x07\x31\xc1\x48\x08\x0f\x0c\x31\x36\x0f")):
             self._write(command, data)
         self._write(_SLPOUT)
         time.sleep_ms(120)
