@@ -8,10 +8,12 @@
 # Project home:
 #   https://github.com/tuupola/micropython-ili934x
 
-import time
+# pylint: disable=import-error
+import utime as time
 import ustruct
 import framebuf
 from micropython import const
+# pylint: enable=import-error
 
 #_NOP = const(0x00)
 #_SWRESET = const(0x01)
@@ -176,7 +178,7 @@ class ILI9341:
         y = min(self.height - 1, max(0, y))
         w = min(self.width - x, max(1, w))
         h = min(self.height - y, max(1, h))
-        self._block(x, y, x + w - 1, y + h - 1, b"")
+        self._block(x, y, x + w - 1, y + h - 1, None)
         chunks, rest = divmod(w * h, 512)
         if chunks:
             data = ustruct.pack(">H", color) * 512
